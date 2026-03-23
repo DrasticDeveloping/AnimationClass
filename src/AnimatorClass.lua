@@ -136,15 +136,13 @@ local AnimatorClass = {
 				LocalNetworkOwner
 			)
 			
-			-- There is a limit of 20 unique animations that can play at the same time
+			-- There is a limit of 20 unique animations that can played per frame
 			-- Leave room for extra incase something else tries to load/play any anims
 			while #self:GetPlayingAnimationTracks() >= MaxConcurrentAnimations do 
 				task.wait(RemoteLatency)
 			end
 			
 			Animation.AnimationTrack:Play(nil, 0.01, nil)
-			--keeping this old code here incase it somehow breaks again
-			--task.spawn(Animation.AnimationTrack.Play, Animation.AnimationTrack, nil, 0.01, nil)
 			task.delay(RemoteLatency, Animation.AnimationTrack.Stop, Animation.AnimationTrack)
 			
 			return Animation

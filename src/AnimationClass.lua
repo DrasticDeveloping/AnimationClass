@@ -134,7 +134,6 @@ local AnimationClass = {
 				NetworkHelper.FireAll(AnimationChangedRemote, self.AnimatorClass.Model, self.NumberId, {
 					Weight = Weight
 				})
-				--warn("Improper behavior is to be expected when setting Looped/Weight on non network owned animations (TODO: Fix)")
 			end
 		else
 			warn("Invalid weight provided")
@@ -166,7 +165,6 @@ local AnimationClass = {
 				NetworkHelper.FireAll(AnimationChangedRemote, self.AnimatorClass.Model, self.NumberId, {
 					Looped = Looped
 				})
-				--warn("Improper behavior is to be expected when setting Looped/Weight on non network owned animations (TODO: Fix)")
 			end
 		else
 			warn("Invalid looped value provided")
@@ -393,33 +391,26 @@ function AnimationModule.new(AnimationTrack: AnimationTrack, AnimatorClass, Netw
 		end
 	end)
 	
-	self.ProbablyShouldStoreThisIncaseSomeStupidBugHappens = {
-		IsPlayingConnection = AnimationTrack:GetPropertyChangedSignal("IsPlaying"):Connect(function()
-			self.IsPlaying = AnimationTrack.IsPlaying
-		end)
-	}
+	AnimationTrack:GetPropertyChangedSignal("IsPlaying"):Connect(function()
+		self.IsPlaying = AnimationTrack.IsPlaying
+	end)
 	
 	local Name = AnimationData.GetNumberId(self.NumberId)
 	AnimationTrack.Name = Name
 	AnimationTrack.Animation.Name = Name
 	
-	
 	task.spawn(function()
 		-- Wait for AnimationTrack data to load
-		while true do
-			self.Speed = AnimationTrack.Speed
-			self.Length = AnimationTrack.Length
-			self.WeightTarget = AnimationTrack.WeightTarget
-			self.IsPlaying = AnimationTrack.IsPlaying
-			self.Looped = AnimationTrack.Looped
-			self.Priority = AnimationTrack.Priority
-						
-			if AnimationTrack.Length > 0 then
-				break
-			end 
-			
+		while AnimationTrack.Length == 0 do
 			task.wait()
 		end
+
+		self.Speed = AnimationTrack.Speed
+		self.Length = AnimationTrack.Length
+		self.WeightTarget = AnimationTrack.WeightTarget
+		self.IsPlaying = AnimationTrack.IsPlaying
+		self.Looped = AnimationTrack.Looped
+		self.Priority = AnimationTrack.Priority
 	end)
 	
 	return self

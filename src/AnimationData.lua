@@ -128,16 +128,11 @@ local function CheckIfAnimation(v)
 	end
 end
 
-game.DescendantAdded:Connect(CheckIfAnimation)
-
-local a = os.clock()
 for _, Obj in game:GetDescendants() do
 	CheckIfAnimation(Obj)
 end
 
-warn("AnimationData Initialized", os.clock()-a)
-print(IdCache, DataCache)
-
+game.DescendantAdded:Connect(CheckIfAnimation)
 
 AnimationData.DataCache = DataCache
 AnimationData.IdCache = IdCache
